@@ -5,51 +5,47 @@ require("dotenv").config();
 const { promisePool, initializeDatabase } = require("./db");
 
 const app = express();
+app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors());
 
 // Initialize database when starting the server
 initializeDatabase()
   .then(() => {
-    // Add School API
-    // app.post("/addSchool", async (req, res) => {
-    //   try {
-    //     const { name, address, latitude, longitude } = req.body;
+    //Add School API
+    app.post("/addSchool", async (req, res) => {
+      try {
+        const { name, address, latitude, longitude } = req.body;
 
-    //     // Validation
-    //     if (
-    //       !name ||
-    //       !address ||
-    //       latitude === undefined ||
-    //       longitude === undefined
-    //     ) {
-    //       return res.status(400).json({ error: "All fields are required" });
-    //     }
+        // Validation
+        if (
+          !name ||
+          !address ||
+          latitude === undefined ||
+          longitude === undefined
+        ) {
+          return res.status(400).json({ error: "All fields are required" });
+        }
 
-    //     if (isNaN(latitude) || isNaN(longitude)) {
-    //       return res
-    //         .status(400)
-    //         .json({ error: "Latitude and longitude must be numbers" });
-    //     }
+        if (isNaN(latitude) || isNaN(longitude)) {
+          return res
+            .status(400)
+            .json({ error: "Latitude and longitude must be numbers" });
+        }
 
-    //     const [result] = await promisePool.query(
-    //       "INSERT INTO schools (name, address, latitude, longitude) VALUES (?, ?, ?, ?)",
-    //       [name, address, latitude, longitude]
-    //     );
+        const [result] = await promisePool.query(
+          "INSERT INTO schools (name, address, latitude, longitude) VALUES (?, ?, ?, ?)",
+          [name, address, latitude, longitude]
+        );
 
-    //     res.status(201).json({
-    //       message: "School added successfully",
-    //       schoolId: result.insertId,
-    //     });
-    //   } catch (err) {
-    //     console.error(err);
-    //     res.status(500).json({ error: "Failed to add school" });
-    //   }
-    // });
-
-    app.post("/addSchool", (req, res) => {
-      console.log(req.body); // Check received data
-      res.json({ message: "Success", data: req.body });
+        res.status(201).json({
+          message: "School added successfully",
+          schoolId: result.insertId,
+        });
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to add school" });
+      }
     });
 
     // List Schools API
